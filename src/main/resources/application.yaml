@@ -1,3 +1,13 @@
 spring:
-  application:
-    name: petshop-api
+  datasource:
+    url: jdbc:postgresql://localhost:5433/petshop
+
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
