@@ -89,4 +89,19 @@ public class CustomerService {
         customer.getPets().removeIf(p -> p.getId() == petId);
         customerRepository.save(customer);
     }
+
+    public CustomerResponse updatePet(Long customerId, Long petId, PetRequest request) {
+        var customer = customerRepository.findByIdWithPets(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        var pet = customer.getPets().stream()
+                .filter(p -> p.getId().equals(petId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+        pet.setName(request.name());
+        pet.setAge(request.age());
+        pet.setSpecies(request.species());
+        pet.setRace(request.race());
+        pet.setObservations(request.observations());
+        return toResponse(customerRepository.save(customer));
+    }
 }

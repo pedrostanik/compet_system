@@ -19,7 +19,9 @@ public class SchedulingService {
     public SchedulingResponse createScheduling(SchedulingRequest schedulingRequest) {
         Scheduling scheduling = new Scheduling();
         scheduling.setCustomerId(schedulingRequest.customerId());
+        scheduling.setCustomerName(schedulingRequest.customerName());
         scheduling.setPetId(schedulingRequest.petId());
+        scheduling.setPetName(schedulingRequest.petName());
         scheduling.setTime(schedulingRequest.time());
         scheduling.setSchedulingObservations(schedulingRequest.schedulingObservations());
         scheduling.setScheduledHappened(false);
@@ -66,5 +68,13 @@ public class SchedulingService {
     public List<SchedulingResponse> listScheduling() {
         return schedulingRepository.findAll().stream()
                 .map(this::toResponse).toList();
+    }
+
+    public SchedulingResponse markAsHappened(Long id) {
+        Scheduling scheduling = schedulingRepository.findById(id)
+                .orElseThrow(() ->  new EntityNotFoundException("Scheduling not found with id " + id));
+
+        scheduling.setScheduledHappened(true);
+        return toResponse(schedulingRepository.save(scheduling));
     }
 }

@@ -38,4 +38,13 @@ public class SchedulingController {
         schedulingService.deleteScheduling(id);
     }
 
+    @PutMapping("/{id}")
+    public SchedulingResponse update(@PathVariable Long id, @RequestBody SchedulingRequest request) {
+        return schedulingService.updateSchedulingTime(id, request);
+    }
+    @PatchMapping("/{id}")
+    public SchedulingResponse markAsHappened(@PathVariable Long id) {
+        return schedulingService.markAsHappened(id);
+    }
+
 }

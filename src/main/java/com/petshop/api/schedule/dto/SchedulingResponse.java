@@ -3,7 +3,7 @@ package com.petshop.api.schedule.dto;
 import java.time.LocalDateTime;
 
 public record SchedulingResponse(
-        Long Id,
+        Long id,
         Long customerId,
         String customerName,
         Long petId,

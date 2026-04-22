@@ -55,4 +55,9 @@ public class CustomerController {
     public void removePet(@PathVariable Long customerId, @PathVariable Long petId) {
         customerService.removePet(customerId, petId);
     }
+
+    @PutMapping("/{customerId}/pets/{petId}")
+    public CustomerResponse updatePet(@PathVariable Long customerId, @PathVariable Long petId, @RequestBody PetRequest request) {
+        return customerService.updatePet(customerId, petId, request);
+    }
 }

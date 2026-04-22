@@ -8,7 +8,7 @@ public class Pet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, name = "name")
     private String name;
@@ -30,11 +30,11 @@ public class Pet {
     @JoinColumn(nullable = false, name = "customer_id")
     private Customer customer;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
