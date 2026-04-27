@@ -3,6 +3,8 @@ package com.petshop.api.schedule.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "schedulings")
@@ -35,6 +37,9 @@ public class Scheduling {
 
     @Column(name="is_package")
     private Boolean isPackage;
+
+    @OneToMany(mappedBy = "scheduling", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SchedulingProtocol> protocols = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -108,18 +113,27 @@ public class Scheduling {
         isPackage = aPackage;
     }
 
+    public List<com.petshop.api.schedule.domain.SchedulingProtocol> getProtocols() {
+        return protocols;
+    }
+
+    public void setProtocols(List<com.petshop.api.schedule.domain.SchedulingProtocol> protocols) {
+        this.protocols = protocols;
+    }
+
     @Override
     public String toString() {
         return "Scheduling{" +
                 "id=" + id +
-                ", customerId='" + customerId + '\'' +
+                ", customerId=" + customerId +
                 ", customerName='" + customerName + '\'' +
                 ", petId=" + petId +
                 ", petName='" + petName + '\'' +
                 ", schedulingObservations='" + schedulingObservations + '\'' +
-                ", scheduledTime='" + time + '\'' +
+                ", time=" + time +
                 ", scheduledHappened=" + scheduledHappened +
                 ", isPackage=" + isPackage +
+                ", protocols=" + protocols +
                 '}';
     }
 }

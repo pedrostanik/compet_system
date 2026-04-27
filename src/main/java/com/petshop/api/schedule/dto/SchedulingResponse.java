@@ -1,6 +1,7 @@
 package com.petshop.api.schedule.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record SchedulingResponse(
         Long id,
@@ -11,6 +12,9 @@ public record SchedulingResponse(
         String schedulingObservations,
         LocalDateTime time,
         Boolean scheduleHappened,
-        Boolean isPackage
+        Boolean isPackage,
+        List<SchedulingProtocolResponse> protocols
+
+
 ) {
 }

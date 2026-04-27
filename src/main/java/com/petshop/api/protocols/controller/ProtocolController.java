@@ -28,6 +28,12 @@ public class ProtocolController {
         return protocolService.listProtocols();
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProtocolResponse> getProtocol(@PathVariable Long id) {
+        return protocolService.listProtocols();
+    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProtocolResponse findById(@PathVariable Long id, @RequestBody ProtocolRequest request) {

@@ -1,6 +1,7 @@
 package com.petshop.api.schedule.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record SchedulingRequest(
         Long customerId,
@@ -9,7 +10,8 @@ public record SchedulingRequest(
         String petName,
         String schedulingObservations,
         LocalDateTime time,
-        Boolean isPackage
+        Boolean isPackage,
+        List<Long> protocolIds
 ) {
 }
 

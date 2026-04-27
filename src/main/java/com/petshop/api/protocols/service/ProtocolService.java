@@ -28,6 +28,12 @@ public class ProtocolService {
                 .map(this::toResponse).toList();
     }
 
+    public ProtocolResponse getProtocol(Long id) {
+        Protocol protocol = protocolRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Scheduling not found with id " + id));
+        return toResponse(protocol);
+    }
+
     public ProtocolResponse updateProtocol(Long id, ProtocolRequest protocolRequest) {
 
         Protocol protocol = protocolRepository.findById(id)

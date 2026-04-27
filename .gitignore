@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AI AGENT ###
+/application-local.yaml
+
+*.yaml
