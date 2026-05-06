@@ -13,8 +13,8 @@ public record SchedulingResponse(
         LocalDateTime time,
         Boolean scheduleHappened,
         Boolean isPackage,
+        Integer duration,
+        Boolean intercepted,
         List<SchedulingProtocolResponse> protocols
-
-
 ) {
 }

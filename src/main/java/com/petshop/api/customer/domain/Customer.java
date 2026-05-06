@@ -25,6 +25,9 @@ public class Customer {
     @Column(nullable = false, name = "email")
     private String email;
 
+    @Column(name = "address")
+    private String address;
+
     @JsonManagedReference
     @OneToMany(mappedBy="customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pet> pets = new ArrayList<>();
@@ -75,5 +78,26 @@ public class Customer {
 
     public void setPets(List<Pet> pets) {
         this.pets = pets;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", pets=" + pets +
+                '}';
     }
 }

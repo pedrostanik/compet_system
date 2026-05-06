@@ -4,5 +4,6 @@ public record CustomerRequest(
         String name,
         String phone,
         String cpf,
-        String email
+        String email,
+        String address
 ) {}

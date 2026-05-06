@@ -1,7 +1,5 @@
 package com.petshop.api.customer.dto;
 
-import com.petshop.api.customer.domain.Pet;
-
 import java.util.List;
 
 public record CustomerResponse(
@@ -10,5 +8,6 @@ public record CustomerResponse(
         String phone,
         String cpf,
         String email,
-        List<Pet> pets
+        String address,
+        List<PetResponse> pets
 ) {}

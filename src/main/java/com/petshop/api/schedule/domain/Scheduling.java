@@ -38,6 +38,12 @@ public class Scheduling {
     @Column(name="is_package")
     private Boolean isPackage;
 
+    @Column(name="duration")
+    private Integer duration;
+
+    @Column(name="intercepted")
+    private Boolean intercepted;
+
     @OneToMany(mappedBy = "scheduling", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SchedulingProtocol> protocols = new ArrayList<>();
 
@@ -121,6 +127,26 @@ public class Scheduling {
         this.protocols = protocols;
     }
 
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public Boolean getIntercepted() {
+        return intercepted;
+    }
+
+    public void setIntercepted(Boolean intercepted) {
+        this.intercepted = intercepted;
+    }
+
     @Override
     public String toString() {
         return "Scheduling{" +
@@ -133,6 +159,8 @@ public class Scheduling {
                 ", time=" + time +
                 ", scheduledHappened=" + scheduledHappened +
                 ", isPackage=" + isPackage +
+                ", duration=" + duration +
+                ", intercepted=" + intercepted +
                 ", protocols=" + protocols +
                 '}';
     }

@@ -11,6 +11,7 @@ public record SchedulingRequest(
         String schedulingObservations,
         LocalDateTime time,
         Boolean isPackage,
+        Integer duration,
         List<Long> protocolIds
 ) {
 }
