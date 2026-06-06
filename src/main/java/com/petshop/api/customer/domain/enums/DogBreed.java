@@ -1,11 +1,10 @@
 package com.petshop.api.customer.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 
     @Getter
-    @RequiredArgsConstructor
     public enum DogBreed {
         MIXED_BREED("Vira-lata"),
         SHIH_TZU("Shih Tzu"),
@@ -22,5 +21,14 @@ import lombok.RequiredArgsConstructor;
         ROTTWEILER("Rottweiler");
 
         private final String portugueseName;
+
+        DogBreed(String portugueseName) {
+            this.portugueseName = portugueseName;
+        }
+
+        @JsonValue
+        public String getPortugueseName() {
+            return portugueseName;
+        }
     }
 

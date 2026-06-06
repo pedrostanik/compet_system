@@ -2,6 +2,9 @@ package com.petshop.api.customer.service;
 
 import com.petshop.api.customer.domain.Customer;
 import com.petshop.api.customer.domain.Pet;
+import com.petshop.api.customer.domain.enums.CatBreed;
+import com.petshop.api.customer.domain.enums.DogBreed;
+import com.petshop.api.customer.domain.enums.SpecieType;
 import com.petshop.api.customer.dto.CustomerRequest;
 import com.petshop.api.customer.dto.CustomerResponse;
 import com.petshop.api.customer.dto.PetRequest;
@@ -95,6 +98,7 @@ public class CustomerService {
         customer.setName(request.name());
         customer.setPhone(request.phone());
         customer.setCpf(request.cpf());
+        customer.setAddress(request.address());
         customer.setEmail(request.email());
         // Se tiver endereço no request, adicione aqui: customer.setAddress(request.address());
     }
@@ -126,8 +130,8 @@ public class CustomerService {
                         p.getId(),
                         p.getName(),
                         p.getAge(),
-                        p.getSpecies() != null ? p.getSpecies() : null,
-                        p.getRace(),
+                        p.getSpecies(),
+                        formatRaceLabel(p.getSpecies(), p.getRace()),
                         p.getRabieVaccination(),
                         p.getRabieVaccinationDate(),
                         p.getV10Vaccination(),
@@ -151,5 +155,20 @@ public class CustomerService {
                 c.getAddress(),
                 petDtos // Agora passamos a lista de DTOs, não de Entidades
         );
+    }
+
+    private String formatRaceLabel(SpecieType species, String race) {
+        if (race == null) return "";
+        try {
+            if (species == SpecieType.CANINE) {
+                return DogBreed.valueOf(race).getPortugueseName();
+            } else if (species == SpecieType.FELINE) {
+                return CatBreed.valueOf(race).getPortugueseName();
+            }
+        } catch (IllegalArgumentException e) {
+            // Se não for um Enum (raça manual), retorna a própria string
+            return race;
+        }
+        return race;
     }
 }

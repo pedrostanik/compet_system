@@ -9,6 +9,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  jackson:
+    deserialization:
+      accept-empty-string-as-null-object: true
+      fail-on-unknown-properties: false
+    serialization:
+      write-dates-as-timestamps: false
   ai:
     anthropic:
       api-key: ${ANTHROPIC_API_KEY}

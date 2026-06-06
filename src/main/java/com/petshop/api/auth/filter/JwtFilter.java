@@ -21,17 +21,31 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.contains("/api/auth/") || path.contains("/api/enums/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+        String path = request.getServletPath();
+        String method = request.getMethod();
+
+        System.out.println(">>> REQUEST: " + method + " " + path);
+        System.out.println(">>> AUTH HEADER: " + header);
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            if (jwtService.isValid(token)) {
+            boolean valid = jwtService.isValid(token);
+            System.out.println(">>> TOKEN VALID: " + valid);
+            if (valid) {
                 String username = jwtService.extractUsername(token);
+                System.out.println(">>> USERNAME: " + username);
                 var auth = new UsernamePasswordAuthenticationToken(
                         username, null, List.of()
                 );

@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,11 +54,11 @@ class CustomerControllerTest {
                 SpecieType.FELINE,              // species (Enum)
                 "SRD",                          // race/breed
                 true,                           // rabiesVaccination
-                LocalDateTime.now(),            // rabiesVaccinationDate
+                LocalDate.now(),            // rabiesVaccinationDate
                 true,                           // v10Vaccination
-                LocalDateTime.now(),            // v10VaccinationDate
+                LocalDate.now(),            // v10VaccinationDate
                 true,                           // dewormed
-                LocalDateTime.now(),            // dewormedDate
+                LocalDate.now(),            // dewormedDate
                 "Nenhuma",                      // allergy
                 "Saudável",                     // healthIssues
                 4.5f,                           // weight
@@ -90,11 +90,11 @@ class CustomerControllerTest {
                 SpecieType.FELINE,              // species (Enum)
                 "SRD",                          // breed/race (String)
                 true,                           // rabiesVaccination
-                LocalDateTime.now(),            // rabiesVaccinationDate
+                LocalDate.now(),            // rabiesVaccinationDate
                 true,                           // v10Vaccination
-                LocalDateTime.now(),            // v10VaccinationDate
+                LocalDate.now(),            // v10VaccinationDate
                 true,                           // dewormed
-                LocalDateTime.now(),            // dewormedDate
+                LocalDate.now(),            // dewormedDate
                 "Nenhuma",                      // allergy
                 "Saudável",                     // healthIssues
                 4.5f,                           // weight (Float)

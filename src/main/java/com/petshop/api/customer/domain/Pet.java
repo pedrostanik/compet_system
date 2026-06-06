@@ -5,7 +5,7 @@ import com.petshop.api.customer.domain.enums.CoatType;
 import com.petshop.api.customer.domain.enums.SpecieType;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 public class Pet {
@@ -24,7 +24,6 @@ public class Pet {
     @Column(nullable = false)
     private SpecieType species;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "race")
     private String race;
 
@@ -32,19 +31,19 @@ public class Pet {
     private Boolean rabieVaccination;
 
     @Column(name="rabie_vaccination_date")
-    private LocalDateTime rabieVaccinationDate;
+    private LocalDate rabieVaccinationDate;
 
     @Column(name="v10_vaccination")
     private Boolean v10Vaccination;
 
     @Column(name="v10_vaccination_date")
-    private LocalDateTime v10VaccinationDate;
+    private LocalDate v10VaccinationDate;
 
     @Column(name="dewormed")
     private Boolean dewormed;
 
     @Column(name="dewormed_date")
-    private LocalDateTime dewormedDate;
+    private LocalDate dewormedDate;
 
     @Column(name="allergy")
     private String allergy;
@@ -132,11 +131,11 @@ public class Pet {
         this.rabieVaccination = rabieVaccination;
     }
 
-    public LocalDateTime getRabieVaccinationDate() {
+    public LocalDate getRabieVaccinationDate() {
         return rabieVaccinationDate;
     }
 
-    public void setRabieVaccinationDate(LocalDateTime rabieVaccinationDate) {
+    public void setRabieVaccinationDate(LocalDate rabieVaccinationDate) {
         this.rabieVaccinationDate = rabieVaccinationDate;
     }
 
@@ -148,11 +147,11 @@ public class Pet {
         this.v10Vaccination = v10Vaccination;
     }
 
-    public LocalDateTime getV10VaccinationDate() {
+    public LocalDate getV10VaccinationDate() {
         return v10VaccinationDate;
     }
 
-    public void setV10VaccinationDate(LocalDateTime v10VaccinationDate) {
+    public void setV10VaccinationDate(LocalDate v10VaccinationDate) {
         this.v10VaccinationDate = v10VaccinationDate;
     }
 
@@ -164,11 +163,11 @@ public class Pet {
         this.dewormed = dewormed;
     }
 
-    public LocalDateTime getDewormedDate() {
+    public LocalDate getDewormedDate() {
         return dewormedDate;
     }
 
-    public void setDewormedDate(LocalDateTime dewormedDate) {
+    public void setDewormedDate(LocalDate dewormedDate) {
         this.dewormedDate = dewormedDate;
     }
 
