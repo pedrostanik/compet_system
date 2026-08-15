@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -49,7 +50,8 @@ class CustomerControllerTest {
         // 1. Criamos o PetResponse com todos os novos campos
         var petResponse = new PetResponse(
                 1L,                             // id
-                "Nox",                          // name
+                "Nox",                      // name
+                LocalDate.now(),               // birthday
                 3,                              // age
                 SpecieType.FELINE,              // species (Enum)
                 "SRD",                          // race/breed
@@ -63,7 +65,9 @@ class CustomerControllerTest {
                 "Saudável",                     // healthIssues
                 4.5f,                           // weight
                 CoatType.SHORT,                 // coatType (Enum)
-                "Observação teste"              // observations
+                "Observação teste",              // observations
+                1L,
+                new BigDecimal(500)
         );
 
         // 2. Criamos o CustomerResponse com endereço e a lista de PetResponse
@@ -73,19 +77,21 @@ class CustomerControllerTest {
                 "(11) 99999-9999",              // phone
                 "123.456.789-00",               // cpf
                 "pedro@email.com",              // email
-                "Rua Exemplo, 123",             // address (adicionado no record)
+                "Rua Exemplo, 123",
+                "Teste",// address (adicionado no record)
                 List.of(petResponse)            // pets (List<PetResponse>)
         );
     }
 
     private CustomerRequest buildCustomerRequest() {
         return new CustomerRequest("Pedro Ostanik", "11 99999-9999",
-                "12431241243", "pedro@email.com", "Rua" );
+                "12431241243", "pedro@email.com", "Rua" , "Teste");
     }
 
     private PetRequest buildPetRequest() {
         return new PetRequest(
                 "Nox",                          // name
+                LocalDate.now(),               // birthday
                 3,                              // age (Integer)
                 SpecieType.FELINE,              // species (Enum)
                 "SRD",                          // breed/race (String)
@@ -99,7 +105,9 @@ class CustomerControllerTest {
                 "Saudável",                     // healthIssues
                 4.5f,                           // weight (Float)
                 CoatType.SHORT,                 // coatType (Enum)
-                "Observação de teste"
+                "Observação de teste",
+                1L,
+                new BigDecimal(500)
         );
     }
 

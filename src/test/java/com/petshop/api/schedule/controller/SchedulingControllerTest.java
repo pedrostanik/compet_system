@@ -2,6 +2,7 @@ package com.petshop.api.schedule.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.api.auth.filter.JwtFilter;
+import com.petshop.api.schedule.domain.enums.ScheduleStatus;
 import com.petshop.api.schedule.dto.SchedulingRequest;
 import com.petshop.api.schedule.dto.SchedulingResponse;
 import com.petshop.api.schedule.service.SchedulingService;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,19 +45,19 @@ class SchedulingControllerTest {
 
     private SchedulingResponse buildResponse() {
         return new SchedulingResponse(
-                1L, 1L, "Pedro", 1L, "Nox",
+                1L, 1L, 1L, 1, "Pedro", 1L, "Nox",
                 "observação teste",
                 LocalDateTime.of(2026, 5, 10, 14, 0),
-                false, false, 60, false, List.of()
+                ScheduleStatus.HAPPENED, false, 60, false, List.of(), new BigDecimal(80)
         );
     }
 
     private SchedulingRequest buildRequest() {
         return new SchedulingRequest(
-                1L, "Pedro", 1L, "Nox",
+                1L, 1L,1,"Pedro", 1L, "Nox",
                 "observação teste",
                 LocalDateTime.parse("2026-04-20T14:30:00"),
-                false, 60, List.of()
+                false, 60, List.of(), new BigDecimal(80)
         );
     }
 
@@ -82,7 +84,7 @@ class SchedulingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].customerName").value("Pedro"))
-                .andExpect(jsonPath("$[0].scheduleHappened").value(false));
+                .andExpect(jsonPath("$[0].scheduleStatus").value("HAPPENED"));
     }
 
     @Test
@@ -128,10 +130,10 @@ class SchedulingControllerTest {
     @Test
     void shouldUpdateScheduling() throws Exception {
         var updated = new SchedulingResponse(
-                1L, 1L, "Pedro", 1L, "Nox",
+                1L, 1L, 1L, 1, "Pedro", 1L, "Nox",
                 "observação atualizada",
                 LocalDateTime.of(2026, 5, 15, 10, 0),
-                false, false, 60, false, List.of()
+                ScheduleStatus.HAPPENED, false, 60, false, List.of(), new BigDecimal(80)
         );
 
         when(schedulingService.updateSchedulingTime(eq(1L), any())).thenReturn(updated);
@@ -144,20 +146,4 @@ class SchedulingControllerTest {
                 .andExpect(jsonPath("$.schedulingObservations").value("observação atualizada"));
     }
 
-    @Test
-    void shouldMarkSchedulingAsHappened() throws Exception {
-        var happened = new SchedulingResponse(
-                1L, 1L, "Pedro", 1L, "Nox",
-                "observação teste",
-                LocalDateTime.of(2026, 5, 10, 14, 0),
-                true, false, 60, false, List.of()
-        );
-
-        when(schedulingService.markAsHappened(1L)).thenReturn(happened);
-
-        mockMvc.perform(patch("/api/scheduling/1")
-                        .header("Authorization", "Bearer fake-token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleHappened").value(true));
-    }
 }

@@ -4,9 +4,7 @@ import java.util.List;
 
 public record PackResponse(
         Long id,
-        Long petId,
-        String petName,
-        Long customerId,
-        String customerName,
+        String name,
+        String frequencia,
         List<PackProtocolResponse> protocols
 ) {}

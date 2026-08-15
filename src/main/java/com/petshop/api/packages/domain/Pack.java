@@ -14,18 +14,11 @@ public class Pack {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "customer_id")
-    private Long customerId;
+    @Column(name = "name")
+    private String name;
 
-    @Column(nullable = false, name = "customer_name")
-    private String customerName;
-
-    @Column(nullable = false, name = "pet_id")
-    private Long petId;
-
-    @Column(nullable = false, name = "pet_name")
-    private String petName;
-
+    @Column(name="frequencia")
+    private String frequencia;
 
     @OneToMany(mappedBy = "pack", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -35,47 +28,28 @@ public class Pack {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getPetId() {
-        return petId;
+    public List<PackProtocol> getProtocols() { return protocols; }
+    public void setProtocols(List<PackProtocol> protocols) { this.protocols = protocols; }
+
+
+    public String getFrequencia() {
+        return frequencia;
     }
 
-    public void setPetId(Long petId) {
-        this.petId = petId;
+    public void setFrequencia(String frequencia) {
+        this.frequencia = frequencia;
     }
 
-    public String getPetName() {
-        return petName;
-    }
-
-    public void setPetName(String petName) {
-        this.petName = petName;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public List<PackProtocol> getProtocols() {
-        return protocols;
-    }
-
-    public void setProtocols(List<PackProtocol> protocols) {
-        this.protocols = protocols;
-    }
 }

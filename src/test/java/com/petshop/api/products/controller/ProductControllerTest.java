@@ -105,7 +105,7 @@ class ProductControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.sku").value("RAC-CAE-001"))
                 .andExpect(jsonPath("$.name").value("Ração Premium Adulto 15kg"))
-                .andExpect(jsonPath("$.category").value("FOOD"));
+                .andExpect(jsonPath("$.category").value("ALI"));
     }
 
     @Test

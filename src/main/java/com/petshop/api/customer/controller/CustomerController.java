@@ -3,6 +3,7 @@ package com.petshop.api.customer.controller;
 import com.petshop.api.customer.dto.CustomerRequest;
 import com.petshop.api.customer.dto.CustomerResponse;
 import com.petshop.api.customer.dto.PetRequest;
+import com.petshop.api.customer.dto.PetResponse;
 import com.petshop.api.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,11 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerResponse create(@RequestBody CustomerRequest request) {
         return customerService.createCustomer(request);
+    }
+
+    @GetMapping("/search")
+    public List<CustomerResponse> search(@RequestParam String term) {
+        return customerService.search(term);
     }
 
     @GetMapping
@@ -42,6 +48,11 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+    }
+
+    @GetMapping("/pets/{id}")
+    public PetResponse getPet(@PathVariable Long id) {
+        return customerService.getPet(id);
     }
 
     @PostMapping("/{id}/pets")

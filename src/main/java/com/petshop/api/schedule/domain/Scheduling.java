@@ -1,7 +1,9 @@
 package com.petshop.api.schedule.domain;
 
+import com.petshop.api.schedule.domain.enums.ScheduleStatus;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,12 @@ public class Scheduling {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="pack_id")
+    private Long packId;
+
+    @Column(name="pack_cycle")
+    private Integer packCycle;
 
     @Column(nullable = false, name = "customer_id")
     private Long customerId;
@@ -32,17 +40,24 @@ public class Scheduling {
     @Column(name="time")
     private LocalDateTime time;
 
-    @Column(name="happened")
-    private Boolean scheduledHappened;
+    @Enumerated(EnumType.STRING)
+    @Column(name="schedule_status")
+    private ScheduleStatus scheduleStatus;
 
     @Column(name="is_package")
     private Boolean isPackage;
+
+//    @Column(name = "package_cycle_id")
+//    private Long packageCycleId;
 
     @Column(name="duration")
     private Integer duration;
 
     @Column(name="intercepted")
     private Boolean intercepted;
+
+    @Column(name="price")
+    private BigDecimal price;
 
     @OneToMany(mappedBy = "scheduling", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SchedulingProtocol> protocols = new ArrayList<>();
@@ -54,6 +69,8 @@ public class Scheduling {
     public void setId(Long id) {
         this.id = id;
     }
+
+
 
     public Long getCustomerId() {
         return customerId;
@@ -103,12 +120,12 @@ public class Scheduling {
         this.time = time;
     }
 
-    public Boolean getScheduledHappened() {
-        return scheduledHappened;
+    public ScheduleStatus getScheduleStatus() {
+        return scheduleStatus;
     }
 
-    public void setScheduledHappened(Boolean scheduledHappened) {
-        this.scheduledHappened = scheduledHappened;
+    public void setScheduleStatus(ScheduleStatus scheduleStatus) {
+        this.scheduleStatus = scheduleStatus;
     }
 
     public Boolean getPackage() {
@@ -147,21 +164,27 @@ public class Scheduling {
         this.intercepted = intercepted;
     }
 
-    @Override
-    public String toString() {
-        return "Scheduling{" +
-                "id=" + id +
-                ", customerId=" + customerId +
-                ", customerName='" + customerName + '\'' +
-                ", petId=" + petId +
-                ", petName='" + petName + '\'' +
-                ", schedulingObservations='" + schedulingObservations + '\'' +
-                ", time=" + time +
-                ", scheduledHappened=" + scheduledHappened +
-                ", isPackage=" + isPackage +
-                ", duration=" + duration +
-                ", intercepted=" + intercepted +
-                ", protocols=" + protocols +
-                '}';
+    public Long getPackId() {
+        return packId;
+    }
+
+    public void setPackId(Long packId) {
+        this.packId = packId;
+    }
+
+    public Integer getPackCycle() {
+        return packCycle;
+    }
+
+    public void setPackCycle(Integer packCycle) {
+        this.packCycle = packCycle;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

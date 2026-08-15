@@ -9,5 +9,6 @@ public record CustomerResponse(
         String cpf,
         String email,
         String address,
+        String obs,
         List<PetResponse> pets
 ) {}

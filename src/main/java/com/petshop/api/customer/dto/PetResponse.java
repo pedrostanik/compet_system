@@ -3,12 +3,14 @@ package com.petshop.api.customer.dto;
 import com.petshop.api.customer.domain.enums.CoatType;
 import com.petshop.api.customer.domain.enums.SpecieType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record PetResponse(
         long id,
         String name,
-        int age,
+        LocalDate birthday,
+        double age,
         SpecieType species,
         String race,
         Boolean rabieVaccination,
@@ -21,6 +23,8 @@ public record PetResponse(
         String healthIssues,
         Float weight,
         CoatType coatType,
-        String observations
+        String observations,
+        Long packId,
+        BigDecimal packagePrice
 ) {
 }

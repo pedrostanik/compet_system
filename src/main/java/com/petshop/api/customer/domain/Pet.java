@@ -5,6 +5,7 @@ import com.petshop.api.customer.domain.enums.CoatType;
 import com.petshop.api.customer.domain.enums.SpecieType;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -17,8 +18,11 @@ public class Pet {
     @Column(nullable = false, name = "name")
     private String name;
 
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
     @Column(nullable = false, name = "age")
-    private int age;
+    private double age;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,7 +67,13 @@ public class Pet {
     @JoinColumn(nullable = false, name = "customer_id")
     private Customer customer;
 
-    @Column(name="obs")
+    @Column(name="pack_id")
+    private Long packId;
+
+    @Column(name="package_price")
+    private BigDecimal packagePrice;
+
+    @Column(name="obs", length = 1000)
     private String observations;
 
     public Long getId() {
@@ -82,11 +92,11 @@ public class Pet {
         this.name = name;
     }
 
-    public int getAge() {
+    public double getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(double age) {
         this.age = age;
     }
 
@@ -203,26 +213,27 @@ public class Pet {
         this.coatType = coatType;
     }
 
-    @Override
-    public String toString() {
-        return "Pet{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                ", species='" + species + '\'' +
-                ", race='" + race + '\'' +
-                ", rabieVaccination=" + rabieVaccination +
-                ", rabieVaccinationDate=" + rabieVaccinationDate +
-                ", v10Vaccination=" + v10Vaccination +
-                ", v10VaccinationDate=" + v10VaccinationDate +
-                ", dewormed=" + dewormed +
-                ", dewormedDate=" + dewormedDate +
-                ", allergy='" + allergy + '\'' +
-                ", healthIssues='" + healthIssues + '\'' +
-                ", weight=" + weight +
-                ", coatType='" + coatType + '\'' +
-                ", customer=" + customer +
-                ", observations='" + observations + '\'' +
-                '}';
+    public Long getPackId() {
+        return packId;
+    }
+
+    public void setPackId(Long packId) {
+        this.packId = packId;
+    }
+
+    public BigDecimal getPackagePrice() {
+        return packagePrice;
+    }
+
+    public void setPackagePrice(BigDecimal packagePrice) {
+        this.packagePrice = packagePrice;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 }

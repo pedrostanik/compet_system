@@ -10,11 +10,13 @@ import com.petshop.api.customer.dto.CustomerResponse;
 import com.petshop.api.customer.dto.PetRequest;
 import com.petshop.api.customer.dto.PetResponse;
 import com.petshop.api.customer.repository.CustomerRepository;
+import com.petshop.api.customer.repository.PetRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -22,6 +24,7 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final PetRepository petRepository;
 
     @Transactional
     public CustomerResponse createCustomer(CustomerRequest request) {
@@ -43,6 +46,10 @@ public class CustomerService {
         return toResponse(customerRepository.save(customer));
     }
 
+    public List<CustomerResponse> search(String term) {
+        return customerRepository.search(term).stream().map(this::toResponse).toList();
+    }
+
     public CustomerResponse getCustomer(Long id) {
         return customerRepository.findById(id)
                 .map(this::toResponse)
@@ -51,7 +58,9 @@ public class CustomerService {
 
     public List<CustomerResponse> listCustomers() {
         return customerRepository.findAll().stream()
-                .map(this::toResponse).toList();
+                .map(this::toResponse)
+                .sorted(Comparator.comparing(CustomerResponse::name))
+                .toList();
     }
 
     @Transactional
@@ -68,6 +77,12 @@ public class CustomerService {
             throw new EntityNotFoundException("Customer not found");
         }
         customerRepository.deleteById(id);
+    }
+
+    public PetResponse getPet(Long id) {
+        return petRepository.findById(id)
+                .map(this::toResponsePet)
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
     }
 
     @Transactional
@@ -87,9 +102,10 @@ public class CustomerService {
                 .filter(p -> p.getId().equals(petId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
-
+        System.out.println("### PET: " + pet);
         mapPetRequestToEntity(pet, request);
-        return toResponse(customerRepository.save(customer));
+        System.out.println("### CUSTOMER: " + customer);
+        return toResponse(customerRepository.saveAndFlush(customer));
     }
 
     // --- MÉTODOS AUXILIARES DE MAPEAMENTO ---
@@ -100,11 +116,15 @@ public class CustomerService {
         customer.setCpf(request.cpf());
         customer.setAddress(request.address());
         customer.setEmail(request.email());
+        customer.setObs(request.obs());
         // Se tiver endereço no request, adicione aqui: customer.setAddress(request.address());
     }
 
     private void mapPetRequestToEntity(Pet pet, PetRequest request) {
+
+        System.out.println("DEBUG: Valor recebido no request: " + request.packagePrice());
         pet.setName(request.name());
+        pet.setBirthday(request.birthday());
         pet.setAge(request.age());
         pet.setSpecies(request.species());
         pet.setRace(request.race()); // Usando breed do record que corrigimos
@@ -122,6 +142,9 @@ public class CustomerService {
         pet.setAllergy(request.allergy());
         pet.setHealthIssues(request.healthIssues());
         pet.setObservations(request.observations());
+
+        pet.setPackId(request.packId());
+        pet.setPackagePrice(request.packagePrice());
     }
 
     private CustomerResponse toResponse(Customer c) {
@@ -129,6 +152,7 @@ public class CustomerService {
                 .map(p -> new PetResponse(
                         p.getId(),
                         p.getName(),
+                        p.getBirthday(),
                         p.getAge(),
                         p.getSpecies(),
                         formatRaceLabel(p.getSpecies(), p.getRace()),
@@ -142,7 +166,9 @@ public class CustomerService {
                         p.getHealthIssues(),
                         p.getWeight(),
                         p.getCoatType(),
-                        p.getObservations()
+                        p.getObservations(),
+                        p.getPackId(),
+                        p.getPackagePrice()
                 ))
                 .toList();
 
@@ -153,8 +179,34 @@ public class CustomerService {
                 c.getCpf(),
                 c.getEmail(),
                 c.getAddress(),
+                c.getObs(),
                 petDtos // Agora passamos a lista de DTOs, não de Entidades
         );
+    }
+
+    private PetResponse toResponsePet(Pet p) {
+        return new PetResponse(
+                        p.getId(),
+                        p.getName(),
+                        p.getBirthday(),
+                        p.getAge(),
+                        p.getSpecies(),
+                        formatRaceLabel(p.getSpecies(), p.getRace()),
+                        p.getRabieVaccination(),
+                        p.getRabieVaccinationDate(),
+                        p.getV10Vaccination(),
+                        p.getV10VaccinationDate(),
+                        p.getDewormed(),
+                        p.getDewormedDate(),
+                        p.getAllergy(),
+                        p.getHealthIssues(),
+                        p.getWeight(),
+                        p.getCoatType(),
+                        p.getObservations(),
+                        p.getPackId(),
+                        p.getPackagePrice()
+                );
+
     }
 
     private String formatRaceLabel(SpecieType species, String race) {

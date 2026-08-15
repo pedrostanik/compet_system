@@ -29,7 +29,7 @@ public interface SchedulingRepository extends JpaRepository<Scheduling, Long> {
     SELECT EXISTS (
         SELECT 1 FROM schedulings s 
         WHERE s.id <> :id 
-        AND s.happened = false 
+        AND (s.schedule_status = 'SCHEDULED' OR s.schedule_status = 'CONFIRMED')
         AND s.time < :requestedEnd 
         AND (s.time + (s.duration || ' minutes')::interval) > :requestedStart
     )
@@ -40,4 +40,5 @@ public interface SchedulingRepository extends JpaRepository<Scheduling, Long> {
             @Param("requestedEnd") LocalDateTime end
     );
 
+    List<Scheduling> findByPackIdAndPetIdAndTimeAfterOrderByTimeAsc(Long packId, Long petId, LocalDateTime time);
 }

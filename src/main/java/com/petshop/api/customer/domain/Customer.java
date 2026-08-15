@@ -28,6 +28,9 @@ public class Customer {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "customer_obs", length = 1000)
+    private String obs;
+
     @JsonManagedReference
     @OneToMany(mappedBy="customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pet> pets = new ArrayList<>();
@@ -88,6 +91,14 @@ public class Customer {
         this.address = address;
     }
 
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -97,6 +108,7 @@ public class Customer {
                 ", cpf='" + cpf + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
+                ", obs='" + obs + '\'' +
                 ", pets=" + pets +
                 '}';
     }
