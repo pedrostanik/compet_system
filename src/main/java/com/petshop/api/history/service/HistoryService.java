@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,4 +20,6 @@ public class HistoryService {
     public List<PetHistory> getPetHistory(Long petId) {
         return  historyRepository.getPetHistory(petId);
     }
+
+    public List<Object[]> getFrequency(Long petId) { return historyRepository.getPetFrequency(petId);     }
 }

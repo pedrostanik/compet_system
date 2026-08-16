@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/history")
@@ -22,5 +24,10 @@ public class HistoryController {
     @GetMapping("/{id}")
     public List<PetHistory> get(@PathVariable Long id) {
         return historyService.getPetHistory(id);
+    }
+
+    @GetMapping("/frequency/{id}")
+    public List<Object[]> getFrequency(@PathVariable Long id) {
+        return historyService.getFrequency(id);
     }
 }
