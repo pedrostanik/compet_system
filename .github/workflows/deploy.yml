@@ -1,0 +1,60 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+# Never run two API deploys at once (concurrency groups are per-repository).
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build and test
+        run: sh mvnw -B verify
+
+      - name: Stage deploy bundle
+        run: |
+          mkdir -p bundle
+          cp target/petshop-api-0.0.1-SNAPSHOT.jar bundle/app.jar
+          cp deploy/docker-compose.yml deploy/load-secrets.sh deploy/deploy-api.sh bundle/
+
+      - name: Configure SSH
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$EC2_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload bundle
+        env:
+          TARGET: ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$TARGET" 'rm -rf /home/ubuntu/petshop/.deploy-staging && mkdir -p /home/ubuntu/petshop/.deploy-staging'
+          scp -i ~/.ssh/deploy_key bundle/* "$TARGET":/home/ubuntu/petshop/.deploy-staging/
+
+      - name: Run deploy on server
+        env:
+          TARGET: ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
+        run: ssh -i ~/.ssh/deploy_key "$TARGET" 'bash /home/ubuntu/petshop/.deploy-staging/deploy-api.sh'
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

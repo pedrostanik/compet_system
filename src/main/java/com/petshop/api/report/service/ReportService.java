@@ -68,6 +68,7 @@ public class ReportService {
 
         // Agendamentos por cliente
         Map<String, List<Scheduling>> byCustomer = schedulings.stream()
+                .filter(s -> s.getCustomerName() != null)
                 .collect(Collectors.groupingBy(Scheduling::getCustomerName));
 
         StringBuilder sb = new StringBuilder();

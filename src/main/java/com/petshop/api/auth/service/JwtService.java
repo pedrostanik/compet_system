@@ -45,6 +45,8 @@ public class JwtService {
             Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token);
             return true;
         } catch (Exception e) {
+            // ExpiredJwtException = token too old; SignatureException = signed with a different JWT_SECRET
+            System.out.println(">>> TOKEN REJECTED: " + e.getClass().getSimpleName());
             return false;
         }
     }

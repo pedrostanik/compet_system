@@ -1,5 +1,6 @@
 package com.petshop.api.schedule.controller;
 
+import com.petshop.api.schedule.domain.Scheduling;
 import com.petshop.api.schedule.dto.FutureScheduleRequest;
 import com.petshop.api.schedule.dto.SchedulingRequest;
 import com.petshop.api.schedule.dto.SchedulingResponse;
@@ -46,6 +47,12 @@ public class SchedulingController {
     @PatchMapping("/{id}/{status}")
     public SchedulingResponse changeStatus(@PathVariable Long id, @PathVariable String status) {
         return schedulingService.changeStatus(id, status);
+    }
+
+    @GetMapping("/get-future-pack-schedules/{scheduleId}/{packId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<SchedulingResponse> getFuturePacks(@PathVariable Long scheduleId, @PathVariable Long packId) {
+        return schedulingService.getFuturePacks(scheduleId, packId);
     }
 
     @PostMapping("/future-schedules")

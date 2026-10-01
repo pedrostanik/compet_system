@@ -1,0 +1,48 @@
+# Production compose file. Deployed to /home/ubuntu/petshop/ by .github/workflows/deploy.yml.
+# No secrets here: they are pulled from AWS Secrets Manager (pet_system_secrets)
+# into ./.env.secrets by load-secrets.sh on every deploy.
+services:
+  api:
+    image: eclipse-temurin:17-jdk
+    container_name: petshop-api
+    restart: always
+    volumes:
+      - ./petshop-api/target/petshop-api-0.0.1-SNAPSHOT.jar:/app/app.jar
+    command: java -jar /app/app.jar
+    env_file:
+      - ./.env.secrets
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://10.0.1.233:5432/petshop
+      SPRING_DATASOURCE_USERNAME: app_user
+      SPRING_PROFILES_ACTIVE: prod
+      APP_ADMIN_USERNAME: admin
+    networks:
+      - petshop-network
+  nginx:
+    image: nginx:alpine
+    container_name: petshop-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/petshop.conf:/etc/nginx/conf.d/default.conf
+      - ./petshop-web/dist:/var/www/petshop
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - api
+    networks:
+      - petshop-network
+  certbot:
+    image: certbot/certbot
+    container_name: petshop-certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    networks:
+      - petshop-network
+
+networks:
+  petshop-network:
+    driver: bridge

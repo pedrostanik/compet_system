@@ -80,7 +80,7 @@ public class SchedulingService {
         LocalDateTime oldEnd = oldStart.plusMinutes(oldDuration);
 
         // 2. Atualizamos para os novos valores
-        s.setPackId(schedulingRequest.packId());
+        //s.setPackId(schedulingRequest.packId());
         s.setTime(schedulingRequest.time());
         s.setDuration(schedulingRequest.duration());
         s.setPetId(schedulingRequest.petId());
@@ -262,121 +262,140 @@ public class SchedulingService {
         }
     }
 
-            public List<SchedulingResponse> createFutureFromPack(
-                    SchedulingRequest schedulingRequest, LocalDateTime time, Long packId) {
+    public List<SchedulingResponse> getFuturePacks(Long scheduledId, Long packId) {
 
-                Pack pack = packRepository.findById(packId)
-                        .orElseThrow(() -> new EntityNotFoundException("Pack not found with id " + packId));
+        Scheduling current = schedulingRepository.findById(scheduledId)
+                .orElseThrow(() -> new EntityNotFoundException("Scheduling not found with id " + scheduledId));
 
-                List<SchedulingResponse> schedulingResponses = new ArrayList<>();
+        LocalDateTime currentDate = current.getTime();
 
-                int totalAgendamentos;
-                int intervaloDias;
-                if ("Semanal".equals(pack.getFrequencia())) {
-                    totalAgendamentos = 4;
-                    intervaloDias = 7;
-                } else if ("Quinzenal".equals(pack.getFrequencia())) {
-                    totalAgendamentos = 2;
-                    intervaloDias = 14;
-                } else {
-                    throw new IllegalStateException("Frequência de pacote desconhecida: " + pack.getFrequencia());
-                }
+        List<Scheduling> schedulings =  schedulingRepository
+                .findByPackIdAndPetIdAndTimeAfterOrderByTimeAsc(packId, current.getPetId(), currentDate);
 
-                Map<Long, Integer> initialQtyPorProtocolo = new HashMap<>();
-                Map<Long, Integer> remainingByProtocol = new HashMap<>();
-                Map<Long, Protocol> protocolById = new HashMap<>();
-                for (PackProtocol packProtocol : pack.getProtocols()) {
-                    Protocol protocol = packProtocol.getProtocol();
-                    protocolById.put(protocol.getId(), protocol);
+        return schedulings.stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
-                    int qtd = packProtocol.getQuantity();
-                    remainingByProtocol.put(protocol.getId(), qtd);
-                    initialQtyPorProtocolo.put(protocol.getId(), qtd);
-                }
 
-                // === 1) Cria o agendamento MANUAL (ciclo 1, data original) ===
-                Scheduling manual = new Scheduling();
-                manual.setPackId(pack.getId());
-                manual.setPackCycle(1);
-                manual.setCustomerId(schedulingRequest.customerId());
-                manual.setCustomerName(schedulingRequest.customerName());
-                manual.setPetId(schedulingRequest.petId());
-                manual.setPetName(schedulingRequest.petName());
-                manual.setTime(schedulingRequest.time());
-                manual.setSchedulingObservations(schedulingRequest.schedulingObservations());
-                manual.setDuration(schedulingRequest.duration());
-                manual.setScheduleStatus(ScheduleStatus.SCHEDULED);
-                manual.setPrice(schedulingRequest.price());
+    public List<SchedulingResponse> createFutureFromPack(
+            SchedulingRequest schedulingRequest, LocalDateTime time, Long packId) {
 
-                List<SchedulingProtocol> manualProtocols = new ArrayList<>();
-                if (schedulingRequest.protocolIds() != null) {
-                    for (Long protocolId : schedulingRequest.protocolIds()) {
-                        Protocol protocol = protocolById.get(protocolId);
-                        if (protocol != null) {
-                            SchedulingProtocol sp = new SchedulingProtocol();
-                            sp.setScheduling(manual);
-                            sp.setProtocolId(protocol.getId());
-                            sp.setProtocolName(protocol.getName());
-                            manualProtocols.add(sp);
+        Pack pack = packRepository.findById(packId)
+                .orElseThrow(() -> new EntityNotFoundException("Pack not found with id " + packId));
 
-                            remainingByProtocol.computeIfPresent(protocolId, (id, qty) -> qty - 1);
-                        }
-                    }
-                }
-                manual.setProtocols(manualProtocols);
+        List<SchedulingResponse> schedulingResponses = new ArrayList<>();
 
-                Scheduling savedManual = schedulingRepository.save(manual);
-                schedulingResponses.add(toResponse(savedManual));
-
-                // === 2) Cria os FUTUROS (ciclos 2, 3, 4...) ===
-                int agendamentosFuturos = totalAgendamentos - 1;
-                LocalDateTime currSchedule = schedulingRequest.time();
-
-                for (int i = 1; i <= agendamentosFuturos; i++) {
-
-                    Scheduling scheduling = new Scheduling();
-                    scheduling.setPackId(pack.getId());
-                    scheduling.setPackCycle(i + 1);
-                    scheduling.setCustomerId(schedulingRequest.customerId());
-                    scheduling.setCustomerName(schedulingRequest.customerName());
-                    scheduling.setPetId(schedulingRequest.petId());
-                    scheduling.setPetName(schedulingRequest.petName());
-
-                    currSchedule = currSchedule.plusDays(intervaloDias);
-                    scheduling.setTime(currSchedule);
-                    scheduling.setSchedulingObservations(schedulingRequest.schedulingObservations());
-                    scheduling.setDuration(schedulingRequest.duration());
-                    scheduling.setScheduleStatus(ScheduleStatus.SCHEDULED);
-                    scheduling.setPrice(schedulingRequest.price());
-
-                    List<SchedulingProtocol> schedulingProtocols = new ArrayList<>();
-
-                    for (Map.Entry<Long, Integer> entry : remainingByProtocol.entrySet()) {
-                        Long pId = entry.getKey();
-                        int remaining = entry.getValue();
-
-                        int slotsRestantes = (agendamentosFuturos - i) + 1;
-
-                        if (remaining > 0 && (remaining * 1.0 / slotsRestantes) >= 0.35) {
-                            Protocol protocol = protocolById.get(pId);
-
-                            SchedulingProtocol sp = new SchedulingProtocol();
-                            sp.setScheduling(scheduling);
-                            sp.setProtocolId(protocol.getId());
-                            sp.setProtocolName(protocol.getName());
-                            schedulingProtocols.add(sp);
-
-                            remainingByProtocol.put(pId, remaining - 1);
-                         }
-                    }
-
-                    scheduling.setProtocols(schedulingProtocols);
-                    Scheduling saved = schedulingRepository.save(scheduling);
-                    schedulingResponses.add(toResponse(saved));
-                }
-
-                return schedulingResponses;
+        int totalAgendamentos;
+        int intervaloDias;
+        if ("Semanal".equals(pack.getFrequencia())) {
+            totalAgendamentos = 4;
+            intervaloDias = 7;
+        } else if ("Quinzenal".equals(pack.getFrequencia())) {
+            totalAgendamentos = 2;
+            intervaloDias = 14;
+        } else {
+            throw new IllegalStateException("Frequência de pacote desconhecida: " + pack.getFrequencia());
         }
+
+        Map<Long, Integer> initialQtyPorProtocolo = new HashMap<>();
+        Map<Long, Integer> remainingByProtocol = new HashMap<>();
+        Map<Long, Protocol> protocolById = new HashMap<>();
+        for (PackProtocol packProtocol : pack.getProtocols()) {
+            Protocol protocol = packProtocol.getProtocol();
+            protocolById.put(protocol.getId(), protocol);
+
+            int qtd = packProtocol.getQuantity();
+            remainingByProtocol.put(protocol.getId(), qtd);
+            initialQtyPorProtocolo.put(protocol.getId(), qtd);
+        }
+
+        // === 1) Cria o agendamento MANUAL (ciclo 1, data original) ===
+        Scheduling manual = new Scheduling();
+        manual.setPackId(pack.getId());
+        manual.setPackCycle(1);
+        manual.setCustomerId(schedulingRequest.customerId());
+        manual.setCustomerName(schedulingRequest.customerName());
+        manual.setPetId(schedulingRequest.petId());
+        manual.setPetName(schedulingRequest.petName());
+        manual.setTime(schedulingRequest.time());
+        manual.setSchedulingObservations(schedulingRequest.schedulingObservations());
+        manual.setDuration(schedulingRequest.duration());
+        manual.setScheduleStatus(ScheduleStatus.SCHEDULED);
+        manual.setPrice(schedulingRequest.price());
+        manual.setPackage(true);
+
+        List<SchedulingProtocol> manualProtocols = new ArrayList<>();
+        if (schedulingRequest.protocolIds() != null) {
+            for (Long protocolId : schedulingRequest.protocolIds()) {
+                Protocol protocol = protocolById.get(protocolId);
+                if (protocol != null) {
+                    SchedulingProtocol sp = new SchedulingProtocol();
+                    sp.setScheduling(manual);
+                    sp.setProtocolId(protocol.getId());
+                    sp.setProtocolName(protocol.getName());
+                    manualProtocols.add(sp);
+
+                    remainingByProtocol.computeIfPresent(protocolId, (id, qty) -> qty - 1);
+                }
+            }
+        }
+        manual.setProtocols(manualProtocols);
+
+        Scheduling savedManual = schedulingRepository.save(manual);
+        schedulingResponses.add(toResponse(savedManual));
+
+        // === 2) Cria os FUTUROS (ciclos 2, 3, 4...) ===
+        int agendamentosFuturos = totalAgendamentos - 1;
+        LocalDateTime currSchedule = schedulingRequest.time();
+
+        for (int i = 1; i <= agendamentosFuturos; i++) {
+
+            Scheduling scheduling = new Scheduling();
+            scheduling.setPackId(pack.getId());
+            scheduling.setPackCycle(i + 1);
+            scheduling.setCustomerId(schedulingRequest.customerId());
+            scheduling.setCustomerName(schedulingRequest.customerName());
+            scheduling.setPetId(schedulingRequest.petId());
+            scheduling.setPetName(schedulingRequest.petName());
+
+            scheduling.setPackage(true);
+
+            currSchedule = currSchedule.plusDays(intervaloDias);
+            scheduling.setTime(currSchedule);
+            scheduling.setSchedulingObservations(schedulingRequest.schedulingObservations());
+            scheduling.setDuration(schedulingRequest.duration());
+            scheduling.setScheduleStatus(ScheduleStatus.SCHEDULED);
+            scheduling.setPrice(schedulingRequest.price());
+
+            List<SchedulingProtocol> schedulingProtocols = new ArrayList<>();
+
+            for (Map.Entry<Long, Integer> entry : remainingByProtocol.entrySet()) {
+                Long pId = entry.getKey();
+                int remaining = entry.getValue();
+
+                int slotsRestantes = (agendamentosFuturos - i) + 1;
+
+                if (remaining > 0 && (remaining * 1.0 / slotsRestantes) >= 0.35) {
+                    Protocol protocol = protocolById.get(pId);
+
+                    SchedulingProtocol sp = new SchedulingProtocol();
+                    sp.setScheduling(scheduling);
+                    sp.setProtocolId(protocol.getId());
+                    sp.setProtocolName(protocol.getName());
+                    schedulingProtocols.add(sp);
+
+                    remainingByProtocol.put(pId, remaining - 1);
+                 }
+            }
+
+            scheduling.setProtocols(schedulingProtocols);
+            Scheduling saved = schedulingRepository.save(scheduling);
+            schedulingResponses.add(toResponse(saved));
+        }
+
+        return schedulingResponses;
+}
 
     @Transactional
     public List<SchedulingResponse> updateFutureFromPack(Long id, SchedulingRequest schedulingRequest) {

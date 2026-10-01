@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         System.out.println(">>> REQUEST: " + method + " " + path);
-        System.out.println(">>> AUTH HEADER: " + header);
+        System.out.println(">>> AUTH HEADER PRESENT: " + (header != null));
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
