@@ -1,0 +1,16 @@
+# Gitleaks config: built-in rules + project-specific ones.
+# Used by .githooks/pre-commit and the CI "secrets" job.
+title = "petshop gitleaks config"
+
+[extend]
+useDefault = true
+
+# Spring placeholder with a hard-coded fallback for a secret-looking variable,
+# e.g. ${APP_ADMIN_PASSWORD:compet2527@@}. Secrets must come from the environment
+# with no default, so a missing variable fails startup instead of using a known value.
+# Shell defaults (${VAR:-value}) are excluded: they are config, not Spring secrets.
+[[rules]]
+id = "spring-placeholder-secret-default"
+description = "Secret env var with a hard-coded default value"
+regex = '''\$\{[A-Z0-9_]*(?:PASSWORD|SECRET|API_KEY|TOKEN)[A-Z0-9_]*:[^-}\s][^}\s]*\}'''
+keywords = ["password", "secret", "api_key", "token"]

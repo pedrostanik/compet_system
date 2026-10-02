@@ -1,0 +1,6 @@
+# Accepted historical findings: these values were rotated in Phase 0 (2026-10), so the
+# leak is mitigated and history is intentionally not rewritten. Do not add new entries
+# here for live secrets - remove the secret and rotate it instead.
+799bc13bb8b75fc0358438264e478d4ce38bea41:src/main/resources/application.yaml:spring-placeholder-secret-default:5
+799bc13bb8b75fc0358438264e478d4ce38bea41:src/main/resources/application.yaml:spring-placeholder-secret-default:21
+799bc13bb8b75fc0358438264e478d4ce38bea41:src/main/resources/application.yaml:spring-placeholder-secret-default:27

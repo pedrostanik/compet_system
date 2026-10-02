@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/petshop}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -24,10 +24,10 @@ spring:
           max-tokens: 2048
 
 jwt:
-  secret: ${JWT_SECRET:uma-chave-secreta-longa-de-pelo-menos-32-caracteres-aqui}
+  secret: ${JWT_SECRET}
   expiration: 86400000
 
 app:
   admin:
     username: ${APP_ADMIN_USERNAME:admin}
-    password: ${APP_ADMIN_PASSWORD:compet2527@@}
+    password: ${APP_ADMIN_PASSWORD}
