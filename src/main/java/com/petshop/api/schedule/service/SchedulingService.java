@@ -3,6 +3,7 @@ package com.petshop.api.schedule.service;
 import com.petshop.api.packages.domain.Pack;
 import com.petshop.api.packages.domain.PackProtocol;
 import com.petshop.api.packages.repository.PackRepository;
+import com.petshop.api.products.service.BusinessException;
 import com.petshop.api.protocols.domain.Protocol;
 import com.petshop.api.protocols.repository.ProtocolRepository;
 import com.petshop.api.schedule.domain.Scheduling;
@@ -405,7 +406,7 @@ public class SchedulingService {
 
         Long packId = current.getPackId();
         if (packId == null) {
-            throw new IllegalStateException("Este agendamento não pertence a um pacote");
+            throw new BusinessException("Este agendamento não pertence a um pacote");
         }
 
         List<SchedulingResponse> responses = new ArrayList<>();

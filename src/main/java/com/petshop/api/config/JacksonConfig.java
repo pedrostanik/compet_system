@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // <-- Importante
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
 
 import java.io.IOException;
 
@@ -30,6 +32,11 @@ public class JacksonConfig {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(String.class, new TrimStringDeserializer());
         mapper.registerModule(module);
+
+        // 4. Serializa ProblemDetail (respostas de erro) no formato RFC 7807, com as propriedades
+        //    extras (ex.: requestId) no nível raiz e não dentro de "properties". O Spring só faz isso
+        //    sozinho no ObjectMapper dele; como este bean o substitui, o mixin é registrado aqui.
+        mapper.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
 
         return mapper;
     }

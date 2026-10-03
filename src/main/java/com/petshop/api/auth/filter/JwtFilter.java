@@ -33,15 +33,12 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
-        String path = request.getServletPath();
-        String method = request.getMethod();
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             boolean valid = jwtService.isValid(token);
             if (valid) {
                 String username = jwtService.extractUsername(token);
-                System.out.println(">>> USERNAME: " + username);
                 var auth = new UsernamePasswordAuthenticationToken(
                         username, null, List.of()
                 );

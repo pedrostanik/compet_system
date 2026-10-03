@@ -2,6 +2,7 @@ package com.petshop.api.auth.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+@Slf4j
 @Service
 public class JwtService {
 
@@ -45,8 +47,9 @@ public class JwtService {
             Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token);
             return true;
         } catch (Exception e) {
-            // ExpiredJwtException = token too old; SignatureException = signed with a different JWT_SECRET
-            System.out.println(">>> TOKEN REJECTED: " + e.getClass().getSimpleName());
+            // ExpiredJwtException = token too old; SignatureException = signed with a different JWT_SECRET.
+            // Only the exception type is logged: the message can contain token content.
+            log.debug("Token rejected: {}", e.getClass().getSimpleName());
             return false;
         }
     }

@@ -4,12 +4,19 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      data-source-properties:
+        # Keeps PostgreSQL's "Detail: Failing row contains (...)" out of exception messages,
+        # so customer data (CPF, e-mail, names) never reaches the logs.
+        logServerErrorDetail: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       # Flyway owns the schema (src/main/resources/db/migration); Hibernate only checks it matches the entities.
       ddl-auto: validate
-    show-sql: true
+    # Off everywhere: it prints straight to stdout, bypassing the logging config.
+    # To see SQL locally: SPRING_JPA_SHOW_SQL=true (or logging.level.org.hibernate.SQL=DEBUG).
+    show-sql: false
   flyway:
     # An existing database without Flyway history (production) is marked as already at V1, so V1 is skipped there.
     # An empty database runs V1__baseline.sql from scratch.
@@ -39,3 +46,21 @@ app:
   admin:
     username: ${APP_ADMIN_USERNAME:admin}
     password: ${APP_ADMIN_PASSWORD}
+
+logging:
+  pattern:
+    # Plain-text logs (local): show the request's correlation ID on every line.
+    level: "%5p [%X{requestId:-}]"
+
+---
+# Production (SPRING_PROFILES_ACTIVE=prod): one JSON object per log line (Elastic Common Schema),
+# so logs can be filtered by field. The MDC requestId is included automatically.
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  structured:
+    format:
+      console: ecs

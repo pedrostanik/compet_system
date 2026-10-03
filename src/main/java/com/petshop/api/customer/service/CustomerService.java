@@ -102,9 +102,7 @@ public class CustomerService {
                 .filter(p -> p.getId().equals(petId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
-        System.out.println("### PET: " + pet);
         mapPetRequestToEntity(pet, request);
-        System.out.println("### CUSTOMER: " + customer);
         return toResponse(customerRepository.saveAndFlush(customer));
     }
 
@@ -122,7 +120,6 @@ public class CustomerService {
 
     private void mapPetRequestToEntity(Pet pet, PetRequest request) {
 
-        System.out.println("DEBUG: Valor recebido no request: " + request.packagePrice());
         pet.setName(request.name());
         pet.setBirthday(request.birthday());
         pet.setAge(request.age());
