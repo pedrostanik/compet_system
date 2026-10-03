@@ -14,6 +14,10 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://10.0.1.233:5432/petshop
       SPRING_DATASOURCE_USERNAME: app_user
+      # Flyway connects as the schema owner (it must create/alter tables); the app itself
+      # stays on app_user, which only has SELECT/INSERT/UPDATE/DELETE.
+      # SPRING_FLYWAY_PASSWORD comes from .env.secrets.
+      SPRING_FLYWAY_USER: petshop_migrator
       SPRING_PROFILES_ACTIVE: prod
       APP_ADMIN_USERNAME: admin
     networks:

@@ -21,7 +21,7 @@ aws secretsmanager get-secret-value \
 | python3 -c '
 import json, sys
 data = json.load(sys.stdin)
-required = ["SPRING_DATASOURCE_PASSWORD", "JWT_SECRET", "ANTHROPIC_API_KEY", "APP_ADMIN_PASSWORD"]
+required = ["SPRING_DATASOURCE_PASSWORD", "SPRING_FLYWAY_PASSWORD", "JWT_SECRET", "ANTHROPIC_API_KEY", "APP_ADMIN_PASSWORD"]
 missing = [k for k in required if not data.get(k)]
 if missing:
     sys.exit("secret is missing keys: " + ", ".join(missing))

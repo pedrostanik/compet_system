@@ -15,6 +15,8 @@ spring:
     # An empty database runs V1__baseline.sql from scratch.
     baseline-on-migrate: true
     baseline-version: 1
+    # In production Flyway connects as the schema owner via SPRING_FLYWAY_USER / SPRING_FLYWAY_PASSWORD
+    # (see deploy/docker-compose.yml). When unset (local dev), it reuses the datasource credentials.
   jackson:
     deserialization:
       accept-empty-string-as-null-object: true
