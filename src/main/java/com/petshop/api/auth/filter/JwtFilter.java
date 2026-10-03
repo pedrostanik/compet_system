@@ -36,13 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        System.out.println(">>> REQUEST: " + method + " " + path);
-        System.out.println(">>> AUTH HEADER PRESENT: " + (header != null));
-
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             boolean valid = jwtService.isValid(token);
-            System.out.println(">>> TOKEN VALID: " + valid);
             if (valid) {
                 String username = jwtService.extractUsername(token);
                 System.out.println(">>> USERNAME: " + username);

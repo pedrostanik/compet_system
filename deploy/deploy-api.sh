@@ -44,7 +44,9 @@ wait_for_start() {
     if docker logs --since "$since" petshop-api 2>&1 | grep -q "Started PetshopApiApplication"; then
       return 0
     fi
-    if docker logs --since "$since" petshop-api 2>&1 | grep -q "APPLICATION FAILED TO START"; then
+    # "APPLICATION FAILED TO START" is only printed for failures Spring can analyze;
+    # anything else (e.g. a Flyway migration error) logs "Application run failed".
+    if docker logs --since "$since" petshop-api 2>&1 | grep -qE "APPLICATION FAILED TO START|Application run failed"; then
       return 1
     fi
     sleep 3
