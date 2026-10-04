@@ -2,6 +2,7 @@ package com.petshop.api.customer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.api.auth.filter.JwtFilter;
+import com.petshop.api.config.JacksonConfig;
 import com.petshop.api.customer.domain.enums.CoatType;
 import com.petshop.api.customer.domain.enums.SpecieType;
 import com.petshop.api.customer.dto.CustomerRequest;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,12 +27,14 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CustomerController.class)
+@Import(JacksonConfig.class) // parse JSON exactly like production (trims strings, "" -> null)
 @AutoConfigureMockMvc(addFilters = false)
 class CustomerControllerTest {
 
@@ -75,7 +79,7 @@ class CustomerControllerTest {
                 1L,                             // id
                 "Pedro Ostanik",                // name
                 "(11) 99999-9999",              // phone
-                "123.456.789-00",               // cpf
+                "529.982.247-25",               // cpf
                 "pedro@email.com",              // email
                 "Rua Exemplo, 123",
                 "Teste",// address (adicionado no record)
@@ -85,7 +89,7 @@ class CustomerControllerTest {
 
     private CustomerRequest buildCustomerRequest() {
         return new CustomerRequest("Pedro Ostanik", "11 99999-9999",
-                "12431241243", "pedro@email.com", "Rua" , "Teste");
+                "529.982.247-25", "pedro@email.com", "Rua" , "Teste");
     }
 
     private PetRequest buildPetRequest() {
@@ -199,5 +203,57 @@ class CustomerControllerTest {
 
         mockMvc.perform(delete("/api/customers/1/pets/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldRejectCustomerWithInvalidCpfAndEmail() throws Exception {
+        var request = new CustomerRequest("Pedro Ostanik", "11 99999-9999",
+                "123.456.789-00", "not-an-email", "Rua", null);
+
+        mockMvc.perform(post("/api/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.cpf").value("CPF inválido"))
+                .andExpect(jsonPath("$.errors.email").exists());
+
+        verifyNoInteractions(customerService);
+    }
+
+    @Test
+    void shouldRejectCustomerWithoutRequiredFields() throws Exception {
+        mockMvc.perform(post("/api/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"   \",\"phone\":\"\",\"cpf\":null,\"email\":\"a@b.com\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.name").exists())
+                .andExpect(jsonPath("$.errors.phone").exists())
+                .andExpect(jsonPath("$.errors.cpf").exists());
+    }
+
+    @Test
+    void shouldRejectPetWithoutSpecies() throws Exception {
+        mockMvc.perform(post("/api/customers/1/pets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Nox\",\"race\":\"SRD\",\"age\":2}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.species").exists());
+    }
+
+    @Test
+    void shouldAcceptPetEditPayloadWithExtraFieldsAndBlankOptionals() throws Exception {
+        // Mirrors PetForm on edit: the whole server Pet object (incl. id) is spread into the body,
+        // optional dates/texts arrive as "" and numbers as strings.
+        when(customerService.updatePet(eq(1L), eq(1L), any())).thenReturn(buildCustomerResponse());
+
+        mockMvc.perform(put("/api/customers/1/pets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"id":1,"name":"Nox","birthday":"2022-01-10","age":"3","species":"Felina",
+                                 "race":"SRD","weight":"4.5","coatType":"Curta","rabieVaccination":true,
+                                 "rabieVaccinationDate":"","allergy":"","packId":null,"packagePrice":"",
+                                 "packCycle":null}
+                                """))
+                .andExpect(status().isOk());
     }
 }

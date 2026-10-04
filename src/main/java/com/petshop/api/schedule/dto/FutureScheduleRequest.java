@@ -1,9 +1,12 @@
 package com.petshop.api.schedule.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 public record FutureScheduleRequest(
-        SchedulingRequest scheduling,
+        @NotNull @Valid SchedulingRequest scheduling,
         LocalDateTime time,
-        Long packId
+        Long packId // required only by POST /future-schedules (checked in SchedulingService)
 ) {}

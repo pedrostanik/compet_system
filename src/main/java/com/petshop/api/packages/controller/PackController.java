@@ -1,5 +1,6 @@
 package com.petshop.api.packages.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.packages.dto.PackRequest;
 import com.petshop.api.packages.dto.PackResponse;
 import com.petshop.api.packages.service.PackService;
@@ -18,7 +19,7 @@ public class PackController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PackResponse createPack(@RequestBody PackRequest packRequest) {
+    public PackResponse createPack(@Valid @RequestBody PackRequest packRequest) {
        return packService.createPack(packRequest);
     }
 
@@ -36,7 +37,7 @@ public class PackController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PackResponse updatePack(@PathVariable Long id, @RequestBody PackRequest packRequest) {
+    public PackResponse updatePack(@PathVariable Long id, @Valid @RequestBody PackRequest packRequest) {
         return packService.updatePack(id, packRequest);
     }
 

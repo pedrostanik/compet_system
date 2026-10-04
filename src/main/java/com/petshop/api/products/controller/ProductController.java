@@ -1,5 +1,6 @@
 package com.petshop.api.products.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.products.dto.ProductRequest;
 import com.petshop.api.products.dto.ProductResponse;
 import com.petshop.api.products.service.ProductService;
@@ -19,7 +20,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse create(@RequestBody ProductRequest request) {
+    public ProductResponse create(@Valid @RequestBody ProductRequest request) {
         return productService.create(request);
     }
 
@@ -49,7 +50,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductResponse update(@PathVariable Long id, @RequestBody ProductRequest request) {
+    public ProductResponse update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         return productService.update(id, request);
     }
 

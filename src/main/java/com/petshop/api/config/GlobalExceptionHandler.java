@@ -1,5 +1,6 @@
 package com.petshop.api.config;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.petshop.api.products.service.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,6 +94,37 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail body = problem(HttpStatus.BAD_REQUEST, "Dados inválidos.");
         body.setProperty("errors", errors);
         return handleExceptionInternal(ex, body, headers, status, request);
+    }
+
+    /**
+     * Unreadable JSON. When Jackson can tell which field failed (unknown enum value, text in a
+     * number field…), report it in the same "errors" map as validation failures.
+     */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        ProblemDetail body = problem(HttpStatus.BAD_REQUEST, "Não foi possível ler os dados enviados.");
+        if (ex.getCause() instanceof JsonMappingException mapping && !mapping.getPath().isEmpty()) {
+            body.setDetail("Dados inválidos.");
+            body.setProperty("errors", Map.of(jsonPath(mapping.getPath()), "valor inválido"));
+        }
+        return handleExceptionInternal(ex, body, headers, status, request);
+    }
+
+    /** "items[0].quantity" style path, matching the field names Bean Validation reports. */
+    private static String jsonPath(List<JsonMappingException.Reference> path) {
+        StringBuilder sb = new StringBuilder();
+        for (JsonMappingException.Reference ref : path) {
+            if (ref.getFieldName() != null) {
+                if (!sb.isEmpty()) sb.append('.');
+                sb.append(ref.getFieldName());
+            } else if (ref.getIndex() >= 0) {
+                sb.append('[').append(ref.getIndex()).append(']');
+            }
+        }
+        return sb.toString();
     }
 
     /** Adds the requestId to the ProblemDetails built by ResponseEntityExceptionHandler too. */

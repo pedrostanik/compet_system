@@ -1,5 +1,6 @@
 package com.petshop.api.customer.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.customer.dto.CustomerRequest;
 import com.petshop.api.customer.dto.CustomerResponse;
 import com.petshop.api.customer.dto.PetRequest;
@@ -20,7 +21,7 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerResponse create(@RequestBody CustomerRequest request) {
+    public CustomerResponse create(@Valid @RequestBody CustomerRequest request) {
         return customerService.createCustomer(request);
     }
 
@@ -40,7 +41,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public CustomerResponse update(@PathVariable Long id, @RequestBody CustomerRequest request) {
+    public CustomerResponse update(@PathVariable Long id, @Valid @RequestBody CustomerRequest request) {
         return customerService.updateCustomer(id, request);
     }
 
@@ -57,7 +58,7 @@ public class CustomerController {
 
     @PostMapping("/{id}/pets")
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerResponse addPet(@PathVariable Long id, @RequestBody PetRequest request) {
+    public CustomerResponse addPet(@PathVariable Long id, @Valid @RequestBody PetRequest request) {
         return customerService.addPet(id, request);
     }
 
@@ -68,7 +69,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}/pets/{petId}")
-    public CustomerResponse updatePet(@PathVariable Long customerId, @PathVariable Long petId, @RequestBody PetRequest request) {
+    public CustomerResponse updatePet(@PathVariable Long customerId, @PathVariable Long petId, @Valid @RequestBody PetRequest request) {
         return customerService.updatePet(customerId, petId, request);
     }
 }

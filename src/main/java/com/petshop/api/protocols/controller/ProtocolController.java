@@ -1,5 +1,6 @@
 package com.petshop.api.protocols.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.protocols.dto.ProtocolRequest;
 import com.petshop.api.protocols.dto.ProtocolResponse;
 import com.petshop.api.protocols.service.ProtocolService;
@@ -18,7 +19,7 @@ public class ProtocolController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProtocolResponse create(@RequestBody ProtocolRequest request) {
+    public ProtocolResponse create(@Valid @RequestBody ProtocolRequest request) {
         return protocolService.createProtocol(request);
     }
 
@@ -36,7 +37,7 @@ public class ProtocolController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProtocolResponse findById(@PathVariable Long id, @RequestBody ProtocolRequest request) {
+    public ProtocolResponse findById(@PathVariable Long id, @Valid @RequestBody ProtocolRequest request) {
         return protocolService.updateProtocol(id, request);
     }
 

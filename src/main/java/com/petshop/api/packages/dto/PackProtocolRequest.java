@@ -1,8 +1,11 @@
 package com.petshop.api.packages.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public record PackProtocolRequest(
-    Long protocolId,
+    @NotNull Long protocolId,
     String protocolName,
     String protocolDescription,
-    Integer quantity
+    @NotNull @Positive Integer quantity
 ) {}

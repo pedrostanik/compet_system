@@ -1,5 +1,6 @@
 package com.petshop.api.schedule.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.schedule.domain.Scheduling;
 import com.petshop.api.schedule.dto.FutureScheduleRequest;
 import com.petshop.api.schedule.dto.SchedulingRequest;
@@ -20,7 +21,7 @@ public class SchedulingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SchedulingResponse create(@RequestBody SchedulingRequest request) {
+    public SchedulingResponse create(@Valid @RequestBody SchedulingRequest request) {
         return schedulingService.createScheduling(request);
     }
 
@@ -41,7 +42,7 @@ public class SchedulingController {
     }
 
     @PutMapping("/{id}")
-    public SchedulingResponse update(@PathVariable Long id, @RequestBody SchedulingRequest request) {
+    public SchedulingResponse update(@PathVariable Long id, @Valid @RequestBody SchedulingRequest request) {
         return schedulingService.updateSchedulingTime(id, request);
     }
     @PatchMapping("/{id}/{status}")
@@ -57,7 +58,7 @@ public class SchedulingController {
 
     @PostMapping("/future-schedules")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<SchedulingResponse> createFutureFromPack(@RequestBody FutureScheduleRequest request) {
+    public List<SchedulingResponse> createFutureFromPack(@Valid @RequestBody FutureScheduleRequest request) {
         return schedulingService.createFutureFromPack(
                 request.scheduling(),
                 request.time(),
@@ -69,7 +70,7 @@ public class SchedulingController {
     @ResponseStatus(HttpStatus.CREATED)
     public List<SchedulingResponse> updateFutureFromPack(
             @PathVariable Long id,
-            @RequestBody FutureScheduleRequest request) {
+            @Valid @RequestBody FutureScheduleRequest request) {
         return schedulingService.updateFutureFromPack(
                 id,
                 request.scheduling()

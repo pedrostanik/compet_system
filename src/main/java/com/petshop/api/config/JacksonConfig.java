@@ -28,6 +28,10 @@ public class JacksonConfig {
         // 2. Outras configurações que você queira manter
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+        // "" em campos de enum/objeto vira null (os formulários mandam "" quando nada foi escolhido),
+        // e a Bean Validation responde com o campo exato (@NotNull) em vez de um erro de leitura do JSON.
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+
         // 3. Seu módulo customizado para o trim de Strings
         SimpleModule module = new SimpleModule();
         module.addDeserializer(String.class, new TrimStringDeserializer());

@@ -1,5 +1,6 @@
 package com.petshop.api.auth.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.auth.dto.LoginRequest;
 import com.petshop.api.auth.dto.LoginResponse;
 import com.petshop.api.auth.service.JwtService;
@@ -23,7 +24,7 @@ public class AuthController {
     private String adminPassword;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         if (!request.username().equals(adminUsername) ||
                 !request.password().equals(adminPassword)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");

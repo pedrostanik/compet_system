@@ -36,7 +36,7 @@ public class SchedulingService {
 
     public SchedulingResponse createScheduling(SchedulingRequest schedulingRequest) {
         Scheduling scheduling = new Scheduling();
-        if (schedulingRequest.isPackage() ) {
+        if (Boolean.TRUE.equals(schedulingRequest.isPackage())) {
             scheduling.setPackCycle(1);
         }
         scheduling.setPackId(schedulingRequest.packId());
@@ -282,6 +282,9 @@ public class SchedulingService {
     public List<SchedulingResponse> createFutureFromPack(
             SchedulingRequest schedulingRequest, LocalDateTime time, Long packId) {
 
+        if (packId == null) {
+            throw new BusinessException("Informe o pacote para gerar os agendamentos futuros");
+        }
         Pack pack = packRepository.findById(packId)
                 .orElseThrow(() -> new EntityNotFoundException("Pack not found with id " + packId));
 

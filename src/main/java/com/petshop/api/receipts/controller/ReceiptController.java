@@ -1,5 +1,6 @@
 package com.petshop.api.receipts.controller;
 
+import jakarta.validation.Valid;
 import com.petshop.api.receipts.dto.ReceiptRequest;
 import com.petshop.api.receipts.dto.ReceiptResponse;
 import com.petshop.api.receipts.service.ReceiptService;
@@ -21,7 +22,7 @@ public class ReceiptController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReceiptResponse create(@RequestBody ReceiptRequest request) {
+    public ReceiptResponse create(@Valid @RequestBody ReceiptRequest request) {
         return receiptService.create(request);
     }
 
