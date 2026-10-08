@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: develop
+
+    env:
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +41,6 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
         run: |
           for v in EC2_SSH_KEY EC2_KNOWN_HOSTS EC2_HOST; do
             [ -n "${!v}" ] || { echo "::error::Secret $v is empty or not visible to this job's environment"; exit 1; }
