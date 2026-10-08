@@ -19,7 +19,6 @@ services:
       # SPRING_FLYWAY_PASSWORD comes from .env.secrets.
       SPRING_FLYWAY_USER: petshop_migrator
       SPRING_PROFILES_ACTIVE: prod
-      APP_ADMIN_USERNAME: admin
     networks:
       - petshop-network
   nginx:

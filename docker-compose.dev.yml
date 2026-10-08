@@ -1,0 +1,20 @@
+# Local development database (PostgreSQL 16, same major version as production).
+#   1. cp .env.example .env   and fill in the values
+#   2. docker compose -f docker-compose.dev.yml up -d
+#   3. run the API (it reads .env too); Flyway creates the schema on first start.
+# Port 5434 avoids clashing with a locally installed PostgreSQL on 5432/5433.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: petshop-db-dev
+    environment:
+      POSTGRES_DB: petshop
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?set SPRING_DATASOURCE_PASSWORD in .env}
+    ports:
+      - "5434:5432"
+    volumes:
+      - petshop-db-dev:/var/lib/postgresql/data
+
+volumes:
+  petshop-db-dev:

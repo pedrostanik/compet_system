@@ -1,12 +1,12 @@
--- Read-only. Lists customers whose CPF or e-mail would be rejected by the API's validation
--- (roadmap 3.4). Such customers can still be viewed, but saving an edit fails until the CPF /
--- e-mail is corrected — so fix them (or accept that) before deploying 3.4.
+-- Read-only. Lists customers whose CPF would be rejected by the API's validation (roadmap 3.4).
+-- Such customers can still be viewed, but saving an edit fails until the CPF is corrected.
+-- (E-mail is optional and not format-checked since V2__customer_email_optional.)
 --
 -- Usage, on the database server:  sudo -u postgres psql -d petshop -f check-customer-data.sql
--- Mirrors com.petshop.api.common.validation.CpfValidator and Hibernate Validator's @Email (approx.).
+-- Mirrors com.petshop.api.common.validation.CpfValidator.
 
 WITH c AS (
-    SELECT id, name, cpf, email,
+    SELECT id, name, cpf,
            regexp_replace(cpf, '\D', '', 'g') AS d
     FROM customer
 ),
@@ -19,15 +19,12 @@ checked AS (
                  <> substr(d, 10, 1)::int                THEN 'dígito verificador'
             WHEN ((SELECT sum(substr(d, i, 1)::int * (12 - i)) FROM generate_series(1, 10) i) * 10 % 11) % 10
                  <> substr(d, 11, 1)::int                THEN 'dígito verificador'
-        END AS cpf_problem,
-        CASE
-            WHEN btrim(email) !~ '^[^@\s]+@[^@\s]+$' THEN 'formato'
-        END AS email_problem
+        END AS cpf_problem
     FROM c
 )
-SELECT id, name, cpf, cpf_problem, email, email_problem
+SELECT id, name, cpf, cpf_problem
 FROM checked
-WHERE cpf_problem IS NOT NULL OR email_problem IS NOT NULL
+WHERE cpf_problem IS NOT NULL
 ORDER BY id;
 
 SELECT count(*) AS total_customers FROM customer;

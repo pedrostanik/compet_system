@@ -22,7 +22,7 @@ public class Customer {
     @Column(nullable = false, name = "cpf")
     private String cpf;
 
-    @Column(nullable = false, name = "email")
+    @Column(name = "email") // optional since V2__customer_email_optional
     private String email;
 
     @Column(name = "address")

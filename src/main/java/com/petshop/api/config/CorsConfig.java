@@ -14,6 +14,9 @@ public class CorsConfig implements WebMvcConfigurer {
                                 "http://18.119.7.127",
                                 "https://petshopcompet.com.br")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                // Lets the browser send the refresh cookie when the web app runs on another port (local dev).
+                .allowCredentials(true)
+                .exposedHeaders("X-Request-Id", "Retry-After");
     }
 }

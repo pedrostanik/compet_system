@@ -36,3 +36,6 @@ build/
 /application-local.yaml
 
 *.yaml
+
+### Local environment (secrets) ###
+.env

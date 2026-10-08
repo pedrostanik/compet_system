@@ -206,7 +206,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void shouldRejectCustomerWithInvalidCpfAndEmail() throws Exception {
+    void shouldRejectCustomerWithInvalidCpf_butNotCheckEmail() throws Exception {
         var request = new CustomerRequest("Pedro Ostanik", "11 99999-9999",
                 "123.456.789-00", "not-an-email", "Rua", null);
 
@@ -215,9 +215,22 @@ class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.cpf").value("CPF inválido"))
-                .andExpect(jsonPath("$.errors.email").exists());
+                .andExpect(jsonPath("$.errors.email").doesNotExist());
 
         verifyNoInteractions(customerService);
+    }
+
+    @Test
+    void shouldAcceptCustomerWithoutEmail() throws Exception {
+        // CustomerForm sends "" for an empty field; the API turns it into null.
+        when(customerService.createCustomer(any())).thenReturn(buildCustomerResponse());
+
+        mockMvc.perform(post("/api/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"name":"Maria","phone":"11 98888-7777","cpf":"529.982.247-25",
+                                 "email":"","address":"Rua A, 10","obs":""}"""))
+                .andExpect(status().isCreated());
     }
 
     @Test

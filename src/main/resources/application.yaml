@@ -1,6 +1,11 @@
 spring:
+  config:
+    # Local development: values from ./.env (see .env.example). Optional, so production — where
+    # there is no such file — is unaffected; real environment variables always take precedence.
+    import: optional:file:.env[.properties]
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/petshop}
+    # Default = the dev database from docker-compose.dev.yml.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/petshop}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -40,12 +45,22 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 86400000
 
 app:
-  admin:
-    username: ${APP_ADMIN_USERNAME:admin}
-    password: ${APP_ADMIN_PASSWORD}
+  auth:
+    access-token-ttl: 15m     # bearer token, kept in browser memory
+    refresh-token-ttl: 30d    # httpOnly cookie = how long a login lasts without typing the password
+    refresh-reuse-grace: 10s  # two tabs refreshing at once are not treated as a stolen token
+    cookie-secure: true
+  # First OWNER, created only while the users table is empty (first start after V3__identity).
+  bootstrap:
+    owner-email: ${APP_OWNER_EMAIL:}
+    owner-name: ${APP_OWNER_NAME:}
+    owner-password: ${APP_ADMIN_PASSWORD:}
+
+server:
+  # Behind nginx: take the client IP from X-Forwarded-For (used by the login rate limit).
+  forward-headers-strategy: native
 
 logging:
   pattern:

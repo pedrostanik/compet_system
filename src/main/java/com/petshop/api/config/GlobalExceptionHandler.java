@@ -1,6 +1,10 @@
 package com.petshop.api.config;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.petshop.api.auth.exception.AuthExceptions.InvalidCredentialsException;
+import com.petshop.api.auth.exception.AuthExceptions.InvalidRefreshTokenException;
+import com.petshop.api.auth.exception.AuthExceptions.PasswordChangeRequiredException;
+import com.petshop.api.auth.exception.AuthExceptions.TooManyAttemptsException;
 import com.petshop.api.products.service.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +73,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
         log.info("Access denied: {}", ex.getMessage());
         return problem(HttpStatus.FORBIDDEN, "Você não tem permissão para esta ação.");
+    }
+
+    @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class})
+    public ProblemDetail handleAuthenticationFailure(RuntimeException ex) {
+        return problem(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(TooManyAttemptsException.class)
+    public ResponseEntity<ProblemDetail> handleTooManyAttempts(TooManyAttemptsException ex) {
+        log.warn("Login throttled for {} s", ex.getRetryAfterSeconds());
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfterSeconds()))
+                .body(problem(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordChangeRequiredException.class)
+    public ProblemDetail handlePasswordChangeRequired(PasswordChangeRequiredException ex) {
+        ProblemDetail body = problem(HttpStatus.FORBIDDEN, ex.getMessage());
+        body.setProperty("code", PasswordChangeRequiredException.CODE);
+        return body;
     }
 
     @ExceptionHandler(Exception.class)
