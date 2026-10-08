@@ -28,6 +28,8 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
