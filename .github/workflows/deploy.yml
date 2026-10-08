@@ -16,8 +16,6 @@ jobs:
     timeout-minutes: 20
     environment: develop
 
-    env:
-      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 

@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestcontainersConfiguration.class)
 class AuthFlowIntegrationTest {
 
-    private static final String PASSWORD = System.getenv("TEST_PASSWORD");
+    // Random per run: a test fixture, not a secret. (A literal here is flagged by gitleaks'
+    // generic-api-key rule, and reading it from an env var breaks local runs and the CI job.)
+    private static final String PASSWORD = "Pw-" + UUID.randomUUID();
     private static final AtomicInteger IP = new AtomicInteger(1);
 
     @MockitoBean private ChatModel chatModel;
