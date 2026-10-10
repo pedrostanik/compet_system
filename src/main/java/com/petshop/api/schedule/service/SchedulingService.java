@@ -367,7 +367,7 @@ public class SchedulingService {
 
             currSchedule = currSchedule.plusDays(intervaloDias);
             scheduling.setTime(currSchedule);
-            scheduling.setSchedulingObservations(schedulingRequest.schedulingObservations());
+            scheduling.setSchedulingObservations("");
             scheduling.setDuration(schedulingRequest.duration());
             scheduling.setScheduleStatus(ScheduleStatus.SCHEDULED);
             scheduling.setPrice(schedulingRequest.price());
@@ -472,7 +472,6 @@ public class SchedulingService {
 
             sibling.setTime(siblingNewStart);
             sibling.setDuration(schedulingRequest.duration());
-            sibling.setSchedulingObservations(schedulingRequest.schedulingObservations());
 
             Scheduling savedSibling = schedulingRepository.save(sibling);
             LocalDateTime siblingNewEnd = siblingNewStart.plusMinutes(savedSibling.getDuration());
